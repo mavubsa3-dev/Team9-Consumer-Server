@@ -21,6 +21,9 @@ public class KafkaConsumerConfig {
 	@Value("${spring.kafka.bootstrap-servers}")
 	private String bootStrapServers;
 
+	@Value("${test.kafka.max-poll-records:10}")   // ⭐ yml에서 바꿀 수 있게
+	private int maxPollRecords;
+
 	public Map<String, Object> baseConsumerProps(String groupId){
 		Map<String, Object> props = new HashMap<>();
 
@@ -31,6 +34,8 @@ public class KafkaConsumerConfig {
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
 
 		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+		props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
 
 		return props;
 

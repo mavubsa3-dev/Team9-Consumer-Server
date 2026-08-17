@@ -9,6 +9,7 @@ public record PaymentCompletedEvent(
 	Long orderId,
 	String orderNumber,
 	Long totalAmount,
+	String address,
 	List<OrderItemInfo> orderItems,
 	LocalDateTime completedAt
 ) {
