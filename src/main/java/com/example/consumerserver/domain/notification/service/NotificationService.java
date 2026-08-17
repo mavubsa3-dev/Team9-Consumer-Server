@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.example.consumerserver.common.config.kafka.event.OrderItemInfo;
 import com.example.consumerserver.common.config.kafka.event.PaymentCompletedEvent;
 import com.example.consumerserver.domain.notification.dto.SendEmailMessageRequest;
 import com.example.consumerserver.domain.notification.entity.Notifications;

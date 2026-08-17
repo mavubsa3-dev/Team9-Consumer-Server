@@ -1,12 +1,9 @@
 package com.example.consumerserver.domain.delivery.service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.example.consumerserver.common.config.kafka.event.OrderItemInfo;
 import com.example.consumerserver.common.config.kafka.event.PaymentCompletedEvent;
 import com.example.consumerserver.domain.delivery.entity.Delivery;
 import com.example.consumerserver.domain.delivery.repository.DeliveryRepository;
