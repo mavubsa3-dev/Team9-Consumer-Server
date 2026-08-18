@@ -20,7 +20,7 @@ public class Delivery {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "order_id", nullable = false)
+	@Column(name = "order_id", nullable = false, unique = true)
 	private Long orderId;
 
 	@Column(name = "user_id", nullable = false)

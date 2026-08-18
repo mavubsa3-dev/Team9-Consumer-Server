@@ -63,49 +63,53 @@ public class KafkaConsumerConfig {
 		ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
 
 		factory.setConsumerFactory(paymentNotificatoinConsumerFactory());
+		factory.setConcurrency(3);
 
 		return factory;
 	}
 
-	// @Bean
-	// public ConsumerFactory<String, PaymentCompletedEvent> paymentRankingConsumerFactory(){
-	// 	return buildConsumerFactory("payment-completed-ranking");
-	// }
-	//
-	// @Bean
-	// public ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> paymentCompletedRankingEventKafkaListenerContainerFactory(){
-	// 	ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
-	//
-	// 	factory.setConsumerFactory(paymentRankingConsumerFactory());
-	//
-	// 	return factory;
-	// }
-	//
-	// @Bean
-	// public ConsumerFactory<String, PaymentCompletedEvent> paymentDeliveryConsumerFactory(){
-	// 	return buildConsumerFactory("payment-completed-delivery");
-	// }
-	//
-	// @Bean
-	// public ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> paymentCompletedDeliveryEventKafkaListenerContainerFactory(){
-	// 	ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
-	//
-	// 	factory.setConsumerFactory(paymentDeliveryConsumerFactory());
-	//
-	// 	return factory;
-	// }
-	//
-	// @Bean
-	// public ConsumerFactory<String, PaymentCompletedEvent> paymentPointConsumerFactory(){
-	// 	return buildConsumerFactory("payment-completed-point");
-	// }
-	//
-	// @Bean
-	// public ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> paymentCompletedPointEventKafkaListenerContainerFactory(){
-	// 	ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
-	//
-	// 	factory.setConsumerFactory(paymentPointConsumerFactory());
-	//
-	// 	return factory;
-	// }
+	@Bean
+	public ConsumerFactory<String, PaymentCompletedEvent> paymentRankingConsumerFactory(){
+		return buildConsumerFactory("payment-completed-ranking");
+	}
+
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> paymentCompletedRankingEventKafkaListenerContainerFactory(){
+		ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+
+		factory.setConsumerFactory(paymentRankingConsumerFactory());
+		factory.setConcurrency(1);
+
+		return factory;
+	}
+
+	@Bean
+	public ConsumerFactory<String, PaymentCompletedEvent> paymentDeliveryConsumerFactory(){
+		return buildConsumerFactory("payment-completed-delivery");
+	}
+
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> paymentCompletedDeliveryEventKafkaListenerContainerFactory(){
+		ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+
+		factory.setConsumerFactory(paymentDeliveryConsumerFactory());
+		factory.setConcurrency(2);
+
+		return factory;
+	}
+
+	@Bean
+	public ConsumerFactory<String, PaymentCompletedEvent> paymentPointConsumerFactory(){
+		return buildConsumerFactory("payment-completed-point");
+	}
+
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> paymentCompletedPointEventKafkaListenerContainerFactory(){
+		ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+
+		factory.setConsumerFactory(paymentPointConsumerFactory());
+		factory.setConcurrency(1);
+
+		return factory;
+	}
 }
