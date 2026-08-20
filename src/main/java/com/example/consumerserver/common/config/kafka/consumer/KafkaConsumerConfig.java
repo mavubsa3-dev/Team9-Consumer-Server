@@ -21,7 +21,7 @@ public class KafkaConsumerConfig {
 	@Value("${spring.kafka.bootstrap-servers}")
 	private String bootStrapServers;
 
-	@Value("${test.kafka.max-poll-records:10}")   // ⭐ yml에서 바꿀 수 있게
+	@Value("${spring.kafka.consumer.max-poll-records}")
 	private int maxPollRecords;
 
 	public Map<String, Object> baseConsumerProps(String groupId){
@@ -65,6 +65,8 @@ public class KafkaConsumerConfig {
 		factory.setConsumerFactory(paymentNotificatoinConsumerFactory());
 		factory.setConcurrency(5);
 
+		factory.setBatchListener(true);
+
 		return factory;
 	}
 
@@ -79,6 +81,8 @@ public class KafkaConsumerConfig {
 
 		factory.setConsumerFactory(paymentRankingConsumerFactory());
 		factory.setConcurrency(1);
+
+		factory.setBatchListener(true);
 
 		return factory;
 	}
@@ -95,6 +99,8 @@ public class KafkaConsumerConfig {
 		factory.setConsumerFactory(paymentDeliveryConsumerFactory());
 		factory.setConcurrency(1);
 
+		factory.setBatchListener(true);
+
 		return factory;
 	}
 
@@ -110,6 +116,10 @@ public class KafkaConsumerConfig {
 		factory.setConsumerFactory(paymentPointConsumerFactory());
 		factory.setConcurrency(1);
 
+		factory.setBatchListener(true);
+
 		return factory;
 	}
+
+
 }

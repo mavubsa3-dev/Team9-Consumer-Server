@@ -25,13 +25,9 @@ public class RankingListener {
 		batch = "true"
 	) public void consumeRanking(List<PaymentCompletedEvent> events) {
 
-		long start = System.currentTimeMillis();
-
 		for (PaymentCompletedEvent event : events) {
 			rankingService.increaseScore(event);
 		}
 
-		long time = System.currentTimeMillis() - start;
-		log.info("[랭킹 배치 처리] 건수:{} 전체:{}ms 건당:{}ms", events.size(), time, time / events.size());
 	}
 }

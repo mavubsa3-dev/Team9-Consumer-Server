@@ -22,6 +22,9 @@ public class Notifications extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name = "payment_id", nullable = false, unique = true)
+	private Long paymentId;
+
 	@Column(name = "user_id")
 	private Long userId;
 
@@ -32,7 +35,8 @@ public class Notifications extends BaseTimeEntity {
 	@Column(name = "is_read", nullable = false)
 	private boolean isRead;
 
-	public Notifications(Long userId, String title, String message){
+	public Notifications(Long paymentId, Long userId, String title, String message) {
+		this.paymentId = paymentId;
 		this.userId = userId;
 		this.title = title;
 		this.message = message;

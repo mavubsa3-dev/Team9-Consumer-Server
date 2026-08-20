@@ -3,9 +3,11 @@ package com.example.consumerserver.domain.notification.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.consumerserver.common.config.kafka.event.PaymentCompletedEvent;
@@ -30,9 +32,14 @@ public class NotificationService {
 	@Transactional
 	public void saveNotifications(List<PaymentCompletedEvent> events) {
 		List<Notifications> entities = events.stream()
-			.map(e -> new Notifications(e.userId(), title(e), dbMessage(e)))
+			.map(e -> new Notifications(e.paymentId(), e.userId(), title(e), dbMessage(e)))
 			.toList();
-		notificataionRepository.saveAll(entities);
+
+		try {
+			notificataionRepository.saveAll(entities);
+		} catch (DataIntegrityViolationException e) {
+			log.warn("알림 중복 저장 방지됨 (DB 제약)");
+		}
 	}
 
 	public void sendEmails(List<PaymentCompletedEvent> events) {
@@ -67,7 +74,7 @@ public class NotificationService {
 	private String dbMessage(PaymentCompletedEvent e) {
 		String products = e.orderItems().stream()
 			.map(i -> String.format("- %s %d개", i.productName(), i.quantity()))
-			.collect(Collectors.joining("\n"));   // ⭐ "/n" 오타 수정
+			.collect(Collectors.joining("\n"));
 		return String.format(
 			"주문 ID: %s\n주문번호: %s\n주문 상품:\n%s\n결제 금액: %d원\n결제 일시: %s",
 			e.orderId(), e.orderNumber(), products, e.totalAmount(), e.completedAt());
@@ -83,5 +90,23 @@ public class NotificationService {
 				+ "<p><b>이름:</b> %s</p><p><b>주문 상품:</b></p>%s"
 				+ "<p><b>결제금액:</b> %d원</p><p><b>결제일시:</b> %s</p>",
 			e.orderId(), e.orderNumber(), userName, products, e.totalAmount(), e.completedAt());
+	}
+
+	public List<PaymentCompletedEvent> filterNewEvents(List<PaymentCompletedEvent> events) {
+		List<Long> paymentIds = events.stream()
+			.map(PaymentCompletedEvent::paymentId)
+			.toList();
+
+		Set<Long> alreadyProcessed = notificataionRepository.findExistingPaymentIds(paymentIds);
+
+		List<PaymentCompletedEvent> newEvents = events.stream()
+			.filter(e -> !alreadyProcessed.contains(e.paymentId()))
+			.toList();
+
+		if (newEvents.size() < events.size()) {
+			log.info("중복 이벤트 {}건 제외됨", events.size() - newEvents.size());
+		}
+
+		return newEvents;
 	}
 }
