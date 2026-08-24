@@ -1,8 +1,8 @@
-name: Deploy to EC2 from my-branches
+name: Deploy to EC2
 on:
   push:
     branches:
-      - feat/server
+      - main
 
 jobs:
   build:
