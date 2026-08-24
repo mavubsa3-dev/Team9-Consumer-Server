@@ -1,9 +1,13 @@
 package com.example.consumerserver.domain.delivery.service;
 
-import org.springframework.stereotype.Service;
-import com.example.consumerserver.common.config.kafka.event.PaymentCompletedEvent;
-import com.example.consumerserver.domain.delivery.repository.DeliveryRepository;
+import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.example.consumerserver.common.config.kafka.event.PaymentCompletedEvent;
+import com.example.consumerserver.domain.delivery.entity.Delivery;
+import com.example.consumerserver.domain.delivery.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,8 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 public class DeliveryService {
 
 	private final DeliveryRepository deliveryRepository;
-	private final SaveDeliveryService saveDeliveryService;
 
+
+	@Transactional
 	public void saveDeliveryInfo(PaymentCompletedEvent event){
 
 		if (deliveryRepository.existsByOrderId(event.orderId())){
@@ -22,17 +27,20 @@ public class DeliveryService {
 			return;
 		}
 
-		try{
+		String products = event.orderItems().stream()
+			.map(item -> item.productName() + " " + item.quantity() + "개")
+			.collect(Collectors.joining(", "));
+		try {
+			Delivery delivery = new Delivery(
+				event.orderId(),
+				event.userId(),
+				event.address(),
+				products
+			);
 
-			// 배송 요청 API 호출 시뮬레이션 위한 Delay 가정
-			Thread.sleep(300);
-
-		} catch (InterruptedException e){
-
-			Thread.currentThread().interrupt();
-			throw new RuntimeException("배송 요청 시뮬레이션 중단", e);
+			deliveryRepository.save(delivery);
+		} catch (DataIntegrityViolationException e) {
+			log.warn("데이터 중복 저장 방지. orderId : {} ", event.orderId());
 		}
-
-		saveDeliveryService.saveToDb(event);
 	}
 }
